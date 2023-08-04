@@ -14,7 +14,7 @@ public class ApiWindowFactory implements ToolWindowFactory, DumbAware {
 
         ApiListWindow apiListWindow = new ApiListWindow(project, toolWindow);
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(apiListWindow.getContentPanel(), "", false);
+        Content content = contentFactory.createContent(apiListWindow.getContentPanel(), "api", false);
         toolWindow.getContentManager().addContent(content);
     }
 }
