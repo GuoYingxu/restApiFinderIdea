@@ -15,9 +15,19 @@ public class RestApiModel {
 
     private String tags;
 
+    private String icon;
+
     private List<ParameterModel> parameters;
 
     private String responses;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public String getPath() {
         return path;

@@ -6,18 +6,6 @@
     </constraints>
     <properties/>
     <border type="none"/>
-    <children>
-      <scrollpane id="d1341" binding="scrollPane">
-        <constraints border-constraint="Center"/>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="bc38a" class="javax.swing.JList" binding="apiList">
-            <constraints/>
-            <properties/>
-          </component>
-        </children>
-      </scrollpane>
-    </children>
+    <children/>
   </grid>
 </form>

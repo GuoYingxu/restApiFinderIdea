@@ -34,7 +34,9 @@
     </toolWindow>
     </extensions>
     <projectListeners>
-        <listener class="com.qst.extension.restapifinderidea.listener.FileApiWindowListener" topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
+        <listener class="com.qst.extension.restapifinderidea.listener.FileChangeListener"
+        topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"
+        />
     </projectListeners>
     <actions>
         <action id="testParse" class="com.qst.extension.restapifinderidea.actions.RestApiParse" text="RestApiParse"

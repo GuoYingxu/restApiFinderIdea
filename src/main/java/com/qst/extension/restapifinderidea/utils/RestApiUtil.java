@@ -60,7 +60,7 @@ public class RestApiUtil {
         List<RestApiModel> models = new ArrayList<>();
         PsiAnnotation ann = psiClass.getAnnotation(ANN_REQUEST);
         String baseUrl = parseUrl(ann,ANN_REQUEST);
-        System.out.println(baseUrl);
+//        System.out.println(baseUrl);
         PsiMethod[] methods = psiClass.getMethods();
         for(PsiMethod method : methods) {
           RestApiModel m =  parseMethod(method,baseUrl);
@@ -95,49 +95,84 @@ public class RestApiUtil {
     }
 
     public static RestApiModel parsePost(PsiMethod psiMethod, String baseUrl) {
+        RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_POST),ANN_POST);
-        System.out.println("url::"+ joinPath(baseUrl,url));
-        return null;
+        model.setPath(joinPath(baseUrl,url));
+        String method = Method_POST;
+        model.setMethod(method);
+        String descriptions = parseDescriptions(psiMethod);
+        model.setDescription(descriptions);
+        List<ParameterModel> parameters = parseParameters(psiMethod);
+        model.setParameters(parameters);
+        return model;
     }
     public static RestApiModel parseGet(PsiMethod psiMethod,String baseUrl) {
         RestApiModel model = new RestApiModel();
 
         String url = parseUrl(psiMethod.getAnnotation(ANN_GET),ANN_GET);
         model.setPath(joinPath(baseUrl,url));
-        System.out.println("url::"+ joinPath(baseUrl,url));
         String method = Method_GET;
         model.setMethod(method);
-        System.out.println("method::"+ method);
         String descriptions = parseDescriptions(psiMethod);
         model.setDescription(descriptions);
-        System.out.println("descriptions::"+ descriptions);
-        String tag ="";
-        System.out.println("tag::"+ tag);
-        String category = "";
-        System.out.println("category::"+ category);
         List<ParameterModel> parameters = parseParameters(psiMethod);
         model.setParameters(parameters);
         return model;
     }
     public static RestApiModel parsePut(PsiMethod psiMethod,String baseUrl) {
+        RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_PUT),ANN_PUT);
-        System.out.println("url::"+ joinPath(baseUrl,url));
-        return null;
+        model.setPath(joinPath(baseUrl,url));
+        model.setMethod(Method_PUT);
+        String descriptions = parseDescriptions(psiMethod);
+        model.setDescription(descriptions);
+        List<ParameterModel> parameters = parseParameters(psiMethod);
+        model.setParameters(parameters);
+        return model;
     }
     public static RestApiModel parseDelete(PsiMethod psiMethod,String baseUrl) {
+        RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_DELETE),ANN_DELETE);
-        System.out.println("url::"+ joinPath(baseUrl,url));
-        return null;
+        model.setPath(joinPath(baseUrl,url));
+        model.setMethod(Method_DELETE);
+        String descriptions = parseDescriptions(psiMethod);
+        model.setDescription(descriptions);
+        List<ParameterModel> parameters = parseParameters(psiMethod);
+        model.setParameters(parameters);
+        return model;
     }
     public static RestApiModel parsePatch(PsiMethod psiMethod,String baseUrl) {
+        RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_PATCH),ANN_PATCH);
-        System.out.println("url::"+ joinPath(baseUrl,url));
-        return null;
+        model.setPath(joinPath(baseUrl,url));
+        model.setMethod(Method_PATCH);
+        String descriptions = parseDescriptions(psiMethod);
+        model.setDescription(descriptions);
+        List<ParameterModel> parameters = parseParameters(psiMethod);
+        model.setParameters(parameters);
+        return model;
     }
     public static RestApiModel parseRequest(PsiMethod psiMethod,String baseUrl) {
+        RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_REQUEST),ANN_REQUEST);
-        System.out.println("url::"+ joinPath(baseUrl,url));
-        return null;
+        model.setPath(joinPath(baseUrl,url));
+        String method = parseRequestMethod(psiMethod.getAnnotation(ANN_REQUEST));
+        model.setMethod(method);
+        String descriptions = parseDescriptions(psiMethod);
+        model.setDescription(descriptions);
+        List<ParameterModel> parameters = parseParameters(psiMethod);
+        model.setParameters(parameters);
+        return model;
+    }
+
+    private static String parseRequestMethod(PsiAnnotation annotation) {
+        if(annotation.hasQualifiedName(ANN_REQUEST)) {
+            PsiAnnotationMemberValue methodvalue = annotation.findAttributeValue("method");
+            return methodvalue.getLastChild().getText();
+        }else {
+            System.out.println("not found"+ ANN_REQUEST);
+        }
+        return Method_GET;
     }
 
     /**
@@ -147,8 +182,16 @@ public class RestApiUtil {
      * @return
      */
     public static String parseUrl(PsiAnnotation psiAnnotation, String qualifier) {
+        String text = psiAnnotation.getText();
         if(psiAnnotation.hasQualifiedName(qualifier)) {
-            String text = psiAnnotation.getText();
+            PsiAnnotationMemberValue value= psiAnnotation.findAttributeValue("value");
+            if(value != null && value.getLastChild() != null) {
+                text = value.getLastChild().getText();
+            }
+            PsiAnnotationMemberValue name= psiAnnotation.findAttributeValue("name");
+            if(name != null && name.getLastChild() != null) {
+                text = name.getLastChild().getText();
+            }
             String[] split = text.split("\"");
             if(split.length > 1) {
                 return split[1];
@@ -172,7 +215,7 @@ public class RestApiUtil {
         if(!root.endsWith("/") && !path.startsWith("/")) {
             return root + "/" + path;
         }
-        return root + path;
+        return root + path ;
     }
 
     /**
@@ -240,7 +283,6 @@ public class RestApiUtil {
                 model.setDescription(paramDocMap.get(parameter.getName()));
             }
             list.add(model);
-            System.out.println("parameter::"+ model.toJsonString());
         }
         return list;
     }

@@ -9,7 +9,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBScrollPane;
+import com.qst.extension.restapifinderidea.model.ApiCellRender;
 import com.qst.extension.restapifinderidea.model.RestApiModel;
+import com.qst.extension.restapifinderidea.utils.DataCenter;
 import com.qst.extension.restapifinderidea.utils.RestApiUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +24,8 @@ import java.util.List;
 
 public class ApiListWindow {
     private JPanel panel1;
-    private JList apiList;
-    private JScrollPane scrollPane;
+    private JBList apiList;
+    private JBScrollPane scrollPane;
     private  Project project;
 
 
@@ -31,7 +35,10 @@ public class ApiListWindow {
         return panel1;
     }
     public ApiListWindow(Project project, ToolWindow window) {
-        apiList.setListData(new String[]{"1","2","3"});
+        apiList = new JBList(DataCenter.LIST_MODEL);
+        scrollPane = new JBScrollPane(apiList);
+        panel1.add(scrollPane);
+        apiList.setCellRenderer(new ApiCellRender());
         this.project = project;
 
     }
@@ -56,7 +63,7 @@ public class ApiListWindow {
 //        apiList.setCellRenderer(new ApiCellRender());
     }
     public void updateList(List<RestApiModel> restApiModelList) {
-        apiList.setListData(restApiModelList.toArray());
+//        apiList.setListData(restApiModelList.toArray());
 //        apiList.setCellRenderer(new ApiCellRender());
 
     }

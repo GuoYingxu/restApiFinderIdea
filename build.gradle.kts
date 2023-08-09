@@ -17,7 +17,9 @@ intellij {
     version.set("2022.1.4")
     plugins.set(listOf("com.intellij.java"))
 }
-
+dependencies {
+    implementation("com.formdev:flatlaf-extras:3.0");
+}
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {

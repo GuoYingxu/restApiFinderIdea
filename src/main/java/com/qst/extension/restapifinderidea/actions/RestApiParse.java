@@ -7,16 +7,18 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import com.qst.extension.restapifinderidea.model.RestApiModel;
+import com.qst.extension.restapifinderidea.utils.DataCenter;
 import com.qst.extension.restapifinderidea.utils.RestApiUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class RestApiParse extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        // TODO: insert action logic here
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         System.out.println(psiFile.getLanguage());
         Editor editor = e.getData(CommonDataKeys.EDITOR);
@@ -25,7 +27,11 @@ public class RestApiParse extends AnAction {
             return;
         }
         PsiTreeUtil.findChildrenOfType(psiFile, PsiClass.class).forEach(psiClass -> {
-            RestApiUtil.parse(psiClass);
+           List<RestApiModel> models =  RestApiUtil.parse(psiClass);
+           models.forEach(model -> {
+               System.out.println(model);
+               DataCenter.add(model);
+           });
         });
 //        psiFile.accept(new JavaRecursiveElementVisitor() {
 //            @Override
