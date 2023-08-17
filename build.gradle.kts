@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.12.0"
+    id("org.jetbrains.kotlin.jvm") version "1.7.20"
 }
 
 group = "com.qst.extension"
@@ -18,7 +19,11 @@ intellij {
     plugins.set(listOf("com.intellij.java"))
 }
 dependencies {
+    implementation("com.alibaba:fastjson:2.0.21");
     implementation("com.formdev:flatlaf-extras:3.0");
+    // okhttp3
+    implementation("com.squareup.okhttp3:okhttp:4.9.3");
+
 }
 tasks {
     // Set the JVM compatibility versions

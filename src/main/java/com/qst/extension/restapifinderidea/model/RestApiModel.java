@@ -20,6 +20,7 @@ public class RestApiModel {
     private List<ParameterModel> parameters;
 
     private String responses;
+    private String moduleName;
 
     public String getIcon() {
         return icon;
@@ -27,6 +28,20 @@ public class RestApiModel {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+    public  RestApiModel() {}
+    public RestApiModel(String method,String url, String moduleName) {
+        this.setMethod(method);
+        this.setPath(url);
+        this.setModuleName(moduleName);
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     public String getPath() {

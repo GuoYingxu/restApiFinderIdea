@@ -2,6 +2,8 @@ package com.qst.extension.restapifinderidea.listener;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class FileChangeListener implements FileEditorManagerListener {
+
     @Override
     public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
         FileEditorManagerListener.super.fileOpened(source, file);
@@ -47,7 +50,6 @@ public class FileChangeListener implements FileEditorManagerListener {
     public void selectionChanged(@NotNull FileEditorManagerEvent event) {
 
         FileEditorManagerListener.super.selectionChanged(event);
-        System.out.println("selectionChanged::"+event.getNewFile().getName());
         Editor editor = event.getManager().getSelectedTextEditor();
         if(editor == null) {
             return;
@@ -59,18 +61,19 @@ public class FileChangeListener implements FileEditorManagerListener {
         DumbService.getInstance(project).runWhenSmart(() -> {
             Document currentDoc = editor.getDocument();
             PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(currentDoc);
-            parseFile(psiFile);
+            RestApiUtil.parseFile(psiFile);
         });
 
     }
 
-    private void parseFile(PsiFile psiFile) {
-        DataCenter.reset();
-        PsiTreeUtil.findChildrenOfType(psiFile, PsiClass.class).forEach(psiClass -> {
-            List<RestApiModel> models = RestApiUtil.parse(psiClass);
-            models.forEach(model -> {
-                DataCenter.add(model);
-            });
-        });
-    }
+//    private void parseFile(PsiFile psiFile) {
+//        DataCenter.reset();
+//        System.out.println("parseFile::"+psiFile.getName());
+//        PsiTreeUtil.findChildrenOfType(psiFile, PsiClass.class).forEach(psiClass -> {
+//            List<RestApiModel> models = RestApiUtil.parse(psiClass);
+//            models.forEach(model -> {
+//                DataCenter.add(model);
+//            });
+//        });
+//    }
 }

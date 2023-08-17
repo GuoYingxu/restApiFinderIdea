@@ -1,12 +1,19 @@
 package com.qst.extension.restapifinderidea.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.qst.extension.restapifinderidea.model.RestApiModel;
 import com.qst.extension.restapifinderidea.model.ParameterModel;
+import okhttp3.*;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -93,7 +100,10 @@ public class RestApiUtil {
         return null;
 
     }
+    public static Boolean isRestElement(PsiElement element) {
 
+        return false;
+    }
     public static RestApiModel parsePost(PsiMethod psiMethod, String baseUrl) {
         RestApiModel model = new RestApiModel();
         String url = parseUrl(psiMethod.getAnnotation(ANN_POST),ANN_POST);
@@ -287,5 +297,55 @@ public class RestApiUtil {
         return list;
     }
 
+    public static void parseFile(PsiFile psiFile) {
+        DataCenter.reset();
+        System.out.println("parseFile::"+psiFile.getName());
+        PsiTreeUtil.findChildrenOfType(psiFile, PsiClass.class).forEach(psiClass -> {
+            List<RestApiModel> models = RestApiUtil.parse(psiClass);
+            models.forEach(model -> {
+                DataCenter.add(model);
+            });
+        });
+    }
+
+    public static String parseUsage(RestApiModel model) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        Map<String,String> params = new HashMap<>();
+        params.put("method",model.getMethod());
+        params.put("url",model.getPath());
+        params.put("moduleName",model.getModuleName());
+        String body = JSON.toJSONString(params);
+        System.out.println(body);
+        RequestBody requestBody =  RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body);
+        Request request = new Request.Builder()
+                .url("http://localhost:3000/apimanage/api_call_infomations")
+                .post(requestBody)
+                .build();
+        try {
+
+            Response response = okHttpClient.newCall(request).execute();
+            String result = response.body().string();
+            System.out.println(result);
+            RestUsageResponse res = JSON.parseObject(result, RestUsageResponse.class);
+            if(res.getCode() == 200) {
+                List<RestApiRef> refs = res.getData();
+                if(refs.size() == 0) return "[未查到调用信息]";
+                StringBuilder sb = new StringBuilder();
+                 refs.stream().map(ref -> {
+                    return "["+ ref.getClientName() +"调用"+ ref.getFiles().split(",").length + "次]";
+                }).forEach(usage -> {
+                    sb.append(usage);
+                });
+                 return sb.toString();
+            }
+            return "requestError";
+        }catch (IOException e) {
+            e.printStackTrace();
+            return "requestError";
+        }
+    }
 
 }

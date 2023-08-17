@@ -26,17 +26,23 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-    <toolWindow factoryClass="com.qst.extension.restapifinderidea.window.ApiWindowFactory"
-                id="api"
-                secondary="true"
-                anchor="left"
-    >
-    </toolWindow>
+        <toolWindow factoryClass="com.qst.extension.restapifinderidea.window.ApiWindowFactory"
+                    id="api"
+                    secondary="true"
+                    anchor="left"
+        >
+        </toolWindow>
+        <codeInsight.inlayProvider
+            language="JAVA" implementationClass="com.qst.extension.restapifinderidea.hints.RestApiInlayProviderkt"
+        />
     </extensions>
     <projectListeners>
-        <listener class="com.qst.extension.restapifinderidea.listener.FileChangeListener"
-        topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"
-        />
+<!--        <listener class="com.qst.extension.restapifinderidea.listener.FileChangeListener"-->
+<!--        topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"-->
+<!--        />-->
+<!--        <listener class="com.qst.extension.restapifinderidea.listener.DocumentChangeListener"-->
+<!--                  topic="com.intellij.openapi.editor.event.DocumentListener"-->
+<!--        />-->
     </projectListeners>
     <actions>
         <action id="testParse" class="com.qst.extension.restapifinderidea.actions.RestApiParse" text="RestApiParse"
